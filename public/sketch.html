@@ -1,0 +1,83 @@
+<html>
+<head>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function (e) {
+            begin();
+        }, false);
+        function begin() {
+            var canvas = document.getElementById('canvas');
+            var edgeSize = Math.round(window.innerHeight / 10);
+            canvas.style.left = edgeSize+'px';
+            canvas.style.top = edgeSize+'px';
+            canvas.width = window.innerWidth - edgeSize*2;
+            canvas.height = window.innerHeight - edgeSize*2;
+            canvas.fillStyle = 'rgb(100,110,100)';
+            //canvas.fillRect(0,0,canvas.width, canvas.height);
+            
+            var ctx = canvas.getContext('2d');
+            var isDrawing, lastPoint;
+            function getRandom(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            canvas.onmousedown = function (e) {
+                isDrawing = true;
+                lastPoint = { x: e.layerX, y: e.layerY };
+            };
+            canvas.onmouseup = function () {
+                isDrawing = false;
+            };
+            
+            canvas.onmousemove = function (e) {
+                if (!isDrawing) return;
+                
+                var point = {
+                    x: e.layerX,// - edgeSize,
+                    y: e.layerY// - edgeSize
+                };
+                stroke(point, 2, 3, 'rgba(0,0,0,0.02)');
+                stroke(point, 1, 0.1, 'rgba(0,0,0,0.04)');
+                lastPoint = point;
+            };
+            function stroke(point, lineWidth, r, color) {
+                ctx.lineWidth = lineWidth;
+                ctx.lineJoin = ctx.lineCap = 'round';
+                ctx.strokeStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(lastPoint.x - getRandom(0, r), lastPoint.y - getRandom(0, r));
+                ctx.lineTo(point.x - getRandom(0, r), point.y - getRandom(0, r));
+                ctx.stroke();
+                ctx.moveTo(lastPoint.x, lastPoint.y);
+                ctx.lineTo(point.x, point.y);
+                ctx.stroke();
+                ctx.moveTo(lastPoint.x + getRandom(0, r), lastPoint.y + getRandom(0, r));
+                ctx.lineTo(point.x + getRandom(0, r), point.y + getRandom(0, r));
+                ctx.stroke();                
+            }
+        }
+    </script>
+<style>
+    html, body { margin:0; padding:0; }
+    #border {
+        /* background:rgb(180, 10, 10); */
+        width:100%;
+        height:100%;
+    }
+    #canvas {
+        position:absolute;
+        margin: 0;
+        border: 1px solid #888;
+        color: white;
+        border-radius: 10px;
+    }
+</style>
+</head>
+
+<body>
+    <div id="border">
+        <canvas id="canvas"></canvas>
+    </div>
+</body>
+
+</html>

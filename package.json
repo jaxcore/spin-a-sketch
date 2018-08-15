@@ -1,0 +1,25 @@
+{
+  "name": "spin-a-sketch",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "jaxcore-virtualspin": "0.0.1",
+    "pixi.js": "^4.8.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "^1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "server": "node ./server.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaxcore/spin-a-sketch"
+  },
+  "homepage": "https://jaxcore.com"
+}

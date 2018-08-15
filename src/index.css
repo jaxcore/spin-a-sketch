@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  /* background: #eee; */
+  overflow:hidden;
+}
+
+#knobscanvas {
+  border:1px solid red;
+  position:absolute;
+  height:0;
+  left:0;
+  bottom:0px;
+}
+
+#sketchcanvas {
+  position:absolute;
+  margin: 0;
+  border: 1px solid #888;
+  color: white;
+  border-radius: 10px;
+}
+
+#clearbutton {
+  position:absolute;
+  top:0;
+  left:50%;
+}
