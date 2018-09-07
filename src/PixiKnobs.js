@@ -9,13 +9,24 @@ class PixiKnob extends Component {
 
         this.physicsV = props.spinV;
         this.physicsH = props.spinH;
+
+
     }
 
     componentWillReceiveProps(props) {
         //if (props.width != this.width || props.height != height) {
-        console.log('componentWillReceiveProps', props);
+        //console.log('componentWillReceiveProps', props);
         //alert(this.points.length);
         this.setSize(props.edgeSize);
+
+        if (props.leftPosition !== this.lastLeft) {
+            this.lastLeft = props.leftPosition;
+            if (this.spriteH) this.spriteH.rotation = props.leftPosition * Math.PI / 16;
+        }
+        if (props.rightPosition !== this.rightLeft) {
+            this.rightLeft = props.rightPosition;
+            if (this.spriteV) this.spriteV.rotation = props.rightPosition * Math.PI / 16;
+        }
         //this.redraw();
         //}
     }
@@ -320,7 +331,11 @@ var x = e.layerX;
     }
 
     render() {
-        return (<canvas ref={this.refCanvas} id="knobscanvas"></canvas>);
+        return (<div>
+            <div>{this.props.leftPosition}</div>
+            <div>{this.props.rightPosition}</div>
+            <canvas ref={this.refCanvas} id="knobscanvas"></canvas>
+        </div>);
     }
 }
 

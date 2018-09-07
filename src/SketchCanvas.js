@@ -9,7 +9,7 @@ class SketchCanvas extends Component {
         super();
 
         this.refCanvas = React.createRef();
-        
+
         this.speed = 2;
 
         this.lastV = 0;
@@ -32,8 +32,27 @@ class SketchCanvas extends Component {
         //if (props.width != this.width || props.height != height) {
         //console.log('componentWillReceiveProps', props);
         //alert(this.points.length);
-        this.setSize(props.edgeSize);
-        this.redraw();
+
+        if (props.edgeSize != this.lastEdgeSize) {
+            this.setSize(props.edgeSize);
+            this.lastEdgeSize = props.edgeSize;
+            this.redraw();
+        }
+
+        if (props.leftPosition !== this.lastLeft) {
+            let dirLeft = props.leftPosition - this.lastLeft;
+            if (dirLeft < 0) this.moveHorizontal(-1);
+            else this.moveHorizontal(1);
+            this.lastLeft = props.leftPosition;
+        }
+        if (props.rightPosition !== this.rightLeft) {
+            let dirRight = props.rightPosition - this.rightLeft;
+            if (dirRight < 0) this.moveVertical(-1);
+            else this.moveVertical(1);
+            this.rightLeft = props.rightPosition;
+        }
+
+        //
         //}
     }
 
@@ -63,14 +82,14 @@ class SketchCanvas extends Component {
     moveVertical(direction) {
         const point = {
             x: this.lastPoint.x,
-            y: this.lastPoint.y + direction*this.speed
+            y: this.lastPoint.y + direction * this.speed
         }
         this.addPoint(point);
     }
 
     moveHorizontal(direction) {
         const point = {
-            x: this.lastPoint.x + direction*this.speed,
+            x: this.lastPoint.x + direction * this.speed,
             y: this.lastPoint.y
         }
         this.addPoint(point);
@@ -90,12 +109,12 @@ class SketchCanvas extends Component {
             this.clear();
         });
         const canvas = this.refCanvas.current;
-        
+
         canvas.fillStyle = 'rgb(100,110,100)';
         //canvas.fillRect(0, 0, canvas.width, canvas.height);
         this.ctx = canvas.getContext('2d');
 
-    
+
         this.setSize(this.props.edgeSize);
         this.lastPoint = { x: this.canvasWidth / 2, y: this.canvasHeight / 2 };
         console.log('first lastPoint', this.lastPoint);

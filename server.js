@@ -57,12 +57,12 @@ Spin.connectAll(function(spin) {
 	});
 	
 	spin.on('spin', function(direction, position) {
-		if (buffer.spin(direction, 2)) {
+		// if (buffer.spin(direction, 2)) {
 			console.log('emit spin', direction, position);
 			io.emit('spin', spin.id, direction, position);
 			spin.rotate(direction, 0);
-		}
-		else console.log('buffer');
+		// }
+		// else console.log('buffer');
 	});
 	
 	spin.on('knob', function(pushed) {
