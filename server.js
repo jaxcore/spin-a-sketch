@@ -34,6 +34,7 @@ io.on('connection', function(socket){
 	// });
 });
 
+//Spin.connectUSB(function (spin) {
 Spin.connectAll(function(spin) {
 	
 	var buffer = new Spin.Buffer(spin);
