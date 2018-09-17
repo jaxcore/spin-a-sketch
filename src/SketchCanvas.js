@@ -8,20 +8,23 @@ class SketchCanvas extends Component {
     constructor(props) {
         super();
 
+        this.refCanvasBorder = React.createRef();
         this.refCanvas = React.createRef();
 
         this.speed = 2;
 
+        //#a3a5b1
+        //#7e828e
+        //#858793
+
         this.lastV = 0;
         this.spinV = props.spinV;
         this.spinV.on('spin', (direction) => {
-            console.log('v', direction);
             this.moveVertical(direction)
         });
         this.lastH = 0;
         this.spinH = props.spinH;
         this.spinH.on('spin', (direction) => {
-            console.log('v', direction);
             this.moveHorizontal(direction)
         });
 
@@ -29,13 +32,11 @@ class SketchCanvas extends Component {
     }
 
     componentWillReceiveProps(props) {
-        //if (props.width != this.width || props.height != height) {
-        //console.log('componentWillReceiveProps', props);
-        //alert(this.points.length);
-
-        if (props.edgeSize != this.lastEdgeSize) {
+        if (props.width != this.width || props.height != this.height) {
             this.setSize(props.edgeSize);
             this.lastEdgeSize = props.edgeSize;
+            this.width = props.width;
+            this.height = props.height;
             this.redraw();
         }
 
@@ -51,14 +52,11 @@ class SketchCanvas extends Component {
             else this.moveVertical(1);
             this.rightLeft = props.rightPosition;
         }
-
-        //
-        //}
     }
 
     redraw() {
-        console.log('redraw');
         this.clearRect();
+        this.drawGradient();
         if (this.points.length) {
             this.lastPoint = this.points[0];
             this.points.forEach((point) => {
@@ -67,16 +65,37 @@ class SketchCanvas extends Component {
         }
     }
 
+    drawGradient() {
+        const { ctx } = this;
+        var gradient = ctx.createLinearGradient(0, 0, this.canvasWidth, 0);
+        // gradient.addColorStop(0, "#a8a9b9");
+        gradient.addColorStop(0, "rgb(176,180,198)");
+        gradient.addColorStop(0.5, "rgb(153,156,166)");
+        gradient.addColorStop(0.8, "rgb(145,150,160)");
+        gradient.addColorStop(1, "#898B93");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0,0,this.canvasWidth,this.canvasHeight);
+    }
+
     setSize(edgeSize) {
-        console.log('setSize', edgeSize);
         const canvas = this.refCanvas.current;
-        canvas.style.left = edgeSize + 'px';
-        canvas.style.top = edgeSize + 'px';
+        const borderSize = Math.round(edgeSize/5);
+        canvas.style.left = borderSize + 'px';
+        canvas.style.top = borderSize + 'px';
+        
         this.canvasWidth = window.innerWidth - edgeSize * 2;
         this.canvasHeight = window.innerHeight - edgeSize * 3.5;
-        canvas.width = this.canvasWidth;
-        canvas.height = this.canvasHeight;
+        
+        canvas.width = this.canvasWidth - borderSize*2;
+        canvas.height = this.canvasHeight - borderSize*2;
         this.edgeSize = edgeSize;
+
+        const canvasborder = this.refCanvasBorder.current;
+        canvasborder.style.left = edgeSize + 'px';
+        canvasborder.style.top = edgeSize + 'px';
+
+        canvasborder.style.width = this.canvasWidth + 'px';
+        canvasborder.style.height = this.canvasHeight + 'px';
     }
 
     moveVertical(direction) {
@@ -98,6 +117,7 @@ class SketchCanvas extends Component {
     clear() {
         this.points = [];
         this.clearRect();
+        this.drawGradient();
     }
 
     clearRect() {
@@ -109,40 +129,11 @@ class SketchCanvas extends Component {
             this.clear();
         });
         const canvas = this.refCanvas.current;
-
         canvas.fillStyle = 'rgb(100,110,100)';
-        //canvas.fillRect(0, 0, canvas.width, canvas.height);
         this.ctx = canvas.getContext('2d');
-
-
         this.setSize(this.props.edgeSize);
         this.lastPoint = { x: this.canvasWidth / 2, y: this.canvasHeight / 2 };
-        console.log('first lastPoint', this.lastPoint);
-
-        // this.addPoint({
-        //     x:this.lastPoint.x,
-        //     y:this.lastPoint.y,
-        // });
-
-        // this.addPoint({
-        //     x:this.lastPoint.x+1,
-        //     y:this.lastPoint.y,
-        // });
-        // this.addPoint({
-        //     x:this.lastPoint.x,
-        //     y:this.lastPoint.y+1,
-        // });
-        // this.addPoint({
-        //     x:this.lastPoint.x-1,
-        //     y:this.lastPoint.y,
-        // });
-        // this.addPoint({
-        //     x:this.lastPoint.x,
-        //     y:this.lastPoint.y-1,
-        // });
-
         this.isDrawing = false;
-        //this.lastPoint = null;
 
         canvas.onmousedown = (e) => {
             this.isDrawing = true;
@@ -150,11 +141,10 @@ class SketchCanvas extends Component {
                 this.lastPoint = { x: e.layerX, y: e.layerY };
                 this.ctx.moveTo(e.layerX, e.layerY);
             }
-            //this.lastPoint = { x: e.layerX, y: e.layerY };
             else {
                 this.addPoint({
-                    x: e.layerX,// - edgeSize,
-                    y: e.layerY// - edgeSize
+                    x: e.layerX,
+                    y: e.layerY
                 });
             }
         };
@@ -166,21 +156,20 @@ class SketchCanvas extends Component {
             if (!this.isDrawing) return;
 
             this.addPoint({
-                x: e.layerX,// - edgeSize,
-                y: e.layerY// - edgeSize
+                x: e.layerX,
+                y: e.layerY
             });
 
         };
 
         this.firstPoint = true;
-
         this.setSize(this.props.edgeSize);
     }
 
     addPoint(point, skip) {
         console.log('addPoint', point)
-        this.stroke(point, 2, 3, 'rgba(0,0,0,0.02)');
-        this.stroke(point, 1, 0.1, 'rgba(0,0,0,0.04)');
+        this.stroke(point, 2, 3, 'rgba(0,0,0,0.04)');
+        this.stroke(point, 1, 0.1, 'rgba(0,0,0,0.06)');
         this.lastPoint = point;
         this.firstPoint = false;
         if (!skip) this.points.push(point);
@@ -205,7 +194,9 @@ class SketchCanvas extends Component {
     }
 
     render() {
-        return (<canvas id="sketchcanvas" ref={this.refCanvas}></canvas>);
+        return (<div id="sketchcanvasborder" ref={this.refCanvasBorder}>
+            <canvas id="sketchcanvas" ref={this.refCanvas}></canvas>
+        </div>);
     }
 }
 
