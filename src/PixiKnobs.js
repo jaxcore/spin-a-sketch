@@ -98,11 +98,14 @@ class PixiKnob extends Component {
         container.addChild(knobSprite);
         container.knobSprite = knobSprite;
 
+        const knobInner = new PIXI.Graphics();
+        container.addChild(knobInner);
+        container.knobInner = knobInner;
+        
         const lineSprite = new PIXI.Graphics();
         container.addChild(lineSprite);
         container.lineSprite = lineSprite;
         
-
         this.app.stage.addChild(container);
 
         spin.on('rotate', (angle, spin) => {
@@ -119,22 +122,26 @@ class PixiKnob extends Component {
         container.position.x = x; // + this.edgeSize * 2;
         container.position.y = y; //+ this.edgeSize;
 
-        let fillColor = 0xEBEBEB;
-        let lineColor = 0xFFFFFF;
+        let fillColor = 0xEAEAEA;
+        let white = 0xFFFFFF;
         let size = this.edgeSize * 1.1;
         container.knobSprite.clear();
-        
-        container.knobSprite.beginFill(fillColor);
-        container.knobSprite.lineStyle(2, lineColor);  //(thickness, color)
-        container.knobSprite.drawCircle(0, 0, size);   //(x,y,radius)
-        //ring.fillCircle(0, 0, ringSize);   //(x,y,radius)
+        container.knobSprite.beginFill(white);
+        container.knobSprite.lineStyle(2, white);
+        container.knobSprite.drawCircle(0, 0, size);
         container.knobSprite.endFill();
 
+        container.knobInner.clear();
+        container.knobInner.beginFill(fillColor);
+        container.knobInner.lineStyle(2, white);
+        container.knobInner.drawCircle(0, 0, size*0.8);
+        container.knobInner.endFill();
+
         container.lineSprite.clear();
-        container.knobSprite.lineStyle(7, 0x000000);
-        container.knobSprite.position.set(0, 0);
-        container.knobSprite.moveTo(0, 0);
-        container.knobSprite.lineTo(0, -this.edgeSize);
+        container.lineSprite.lineStyle(7, 0x000000);
+        container.lineSprite.position.set(0, 0);
+        container.lineSprite.moveTo(0, 0);
+        container.lineSprite.lineTo(0, -this.edgeSize);
     }
 
     addDocumentEvents() {
