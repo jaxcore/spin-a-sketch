@@ -7,7 +7,6 @@ body {
 }
 
 #knobscanvas {
-  border:1px solid red;
   position:absolute;
   height:0;
   left:0;

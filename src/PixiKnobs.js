@@ -24,10 +24,19 @@ class PixiKnob extends Component {
     }
 
     setSize(edgeSize) {
+        this.edgeSize = edgeSize;
         this.worldWidth = window.innerWidth - 2;
         this.worldHeight = edgeSize * 2.5;
         this.refCanvas.current.style.width = this.worldWidth + 'px';
         this.refCanvas.current.style.height = this.worldHeight + 'px';
+        this.midX = this.worldHeight / 2;
+        this.midY = this.worldHeight / 2;
+        
+        //if (resize
+        if (this.app) {
+            this.app.renderer.resize(this.worldWidth, this.worldHeight);
+        }
+        this.drawKnobs();
     }
 
     componentDidMount() {
@@ -37,6 +46,7 @@ class PixiKnob extends Component {
         this.app = new PIXI.Application({
             width: this.worldWidth, 
             height: this.worldHeight, 
+            autoResize: true,
             antialias: true,
             transparent: true,
             resolution: 1,
@@ -52,36 +62,79 @@ class PixiKnob extends Component {
         this.dragging = false;
         this.dragPoint = {};
 
-        this.midX = this.worldHeight / 2;
-        this.midY = this.worldHeight / 2;
-
+        
         this.addDocumentEvents();
     }
 
     setup = () => {
+        this.spriteH = this.createKnob(this.physicsH);
+        this.spriteV = this.createKnob(this.physicsV);
+        this.drawKnobs();
+    }
+
+    drawKnobs() {
         const midY = this.worldHeight / 2;
-        this.spriteH = this.createKnob(this.physicsH, midY * 2, midY);
-        this.spriteV = this.createKnob(this.physicsV, this.worldWidth - midY * 2, midY);
+        this.drawKnob(this.physicsH, this.spriteH, midY * 2, midY);
+        this.drawKnob(this.physicsV, this.spriteV, this.worldWidth - midY * 2, midY);
+        
     }
 
     createKnob(spin, x, y) {
-        const sprite = new PIXI.Sprite(
-            PIXI.loader.resources[this.imageSrc].texture
-        );
-        sprite.x = x;
-        sprite.y = y;
-        sprite.anchor.x = 0.5;
-        sprite.anchor.y = 0.5;
-        sprite.scale.x = this.worldHeight / 300;
-        sprite.scale.y = this.worldHeight / 300;
-        sprite.interactive = true;
-        this.app.stage.addChild(sprite);
+        // const sprite = new PIXI.Sprite(
+        //     PIXI.loader.resources[this.imageSrc].texture
+        // );
+        // sprite.x = x;
+        // sprite.y = y;
+        // sprite.anchor.x = 0.5;
+        // sprite.anchor.y = 0.5;
+        // sprite.scale.x = this.worldHeight / 300;
+        // sprite.scale.y = this.worldHeight / 300;
+        // sprite.interactive = true;
+        // this.app.stage.addChild(sprite);
+
+        const container = new PIXI.DisplayObjectContainer();
+
+        const knobSprite = new PIXI.Graphics();
+        container.addChild(knobSprite);
+        container.knobSprite = knobSprite;
+
+        const lineSprite = new PIXI.Graphics();
+        container.addChild(lineSprite);
+        container.lineSprite = lineSprite;
+        
+
+        this.app.stage.addChild(container);
+
         spin.on('rotate', (angle, spin) => {
-            sprite.rotation = angle;
+            //sprite.rotation = angle;
+            container.rotation = angle;
         });
 
         spin.startSimulation();
-        return sprite;
+        return container;
+    }
+
+    drawKnob(spin, container, x, y) {
+        if (!container || !container.position) return;
+        container.position.x = x; // + this.edgeSize * 2;
+        container.position.y = y; //+ this.edgeSize;
+
+        let fillColor = 0xEBEBEB;
+        let lineColor = 0xFFFFFF;
+        let size = this.edgeSize * 1.1;
+        container.knobSprite.clear();
+        
+        container.knobSprite.beginFill(fillColor);
+        container.knobSprite.lineStyle(2, lineColor);  //(thickness, color)
+        container.knobSprite.drawCircle(0, 0, size);   //(x,y,radius)
+        //ring.fillCircle(0, 0, ringSize);   //(x,y,radius)
+        container.knobSprite.endFill();
+
+        container.lineSprite.clear();
+        container.knobSprite.lineStyle(7, 0x000000);
+        container.knobSprite.position.set(0, 0);
+        container.knobSprite.moveTo(0, 0);
+        container.knobSprite.lineTo(0, -this.edgeSize);
     }
 
     addDocumentEvents() {
