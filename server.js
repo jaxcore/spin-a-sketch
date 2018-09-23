@@ -42,11 +42,12 @@ Spin.connectAll(function(spin) {
 
 	spins[spin.id] = spin;
 	
-	spin.setThrottle(0);
+	spin.setThrottle(30);
 
 	spin.on('connect', function() {
 		console.log('connected');
 		spin.flash([0,255,0]);
+		spin.setThrottle(0);
 		io.emit('spin-connected', spin.id);
 	});
 	

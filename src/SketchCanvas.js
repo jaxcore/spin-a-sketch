@@ -171,7 +171,15 @@ class SketchCanvas extends Component {
         this.stroke(point, 2, 3, 'rgba(0,0,0,0.04)');
         this.stroke(point, 1, 0.1, 'rgba(0,0,0,0.06)');
         this.lastPoint = point;
+        
+        if (this.lastPoint.x < this.props.edgeSize*0.05) this.lastPoint.x = this.edgeSize*0.05;
+		if (this.lastPoint.x > this.canvasWidth-this.props.edgeSize*0.45) this.lastPoint.x = this.canvasWidth-this.props.edgeSize*0.45;
+		if (this.lastPoint.y < this.props.edgeSize*0.05) this.lastPoint.y = this.edgeSize*0.05;
+		if (this.lastPoint.y > this.canvasHeight-this.props.edgeSize*0.45) this.lastPoint.y = this.canvasHeight-this.props.edgeSize*0.45;
+		console.log(this.edgeSize);
+		
         this.firstPoint = false;
+        
         if (!skip) this.points.push(point);
     }
 
