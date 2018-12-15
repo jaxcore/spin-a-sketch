@@ -59,11 +59,11 @@ Spin.connectAll(function(spin) {
 	});
 	
 	spin.on('spin', function(direction, position) {
-		// if (buffer.spin(direction, 2)) {
+		if (spin.buffer(direction, 0, 1)) {
 			console.log('emit spin', direction, position);
 			io.emit('spin', spin.id, direction, position);
 			spin.rotate(direction, 0);
-		// }
+		}
 		// else console.log('buffer');
 	});
 	
