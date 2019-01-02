@@ -5,6 +5,7 @@
   "dependencies": {
     "jaxcore-spin": "0.0.1",
     "jaxcore-virtualspin": "0.0.1",
+    "merge": "^1.2.1",
     "pixi.js": "^4.8.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
