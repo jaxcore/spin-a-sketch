@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "jaxcore-client": "0.0.4",
     "jaxcore-spin": "0.0.1",
     "jaxcore-virtualspin": "0.0.1",
     "merge": "^1.2.1",
     "pixi.js": "^4.8.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "^1.1.4",
+    "react-scripts": "^3.0.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
   },
@@ -25,5 +26,17 @@
     "type": "git",
     "url": "https://github.com/jaxcore/spin-a-sketch"
   },
-  "homepage": "https://jaxcore.com"
+  "homepage": "https://jaxcore.com",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

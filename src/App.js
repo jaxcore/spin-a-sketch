@@ -3,16 +3,14 @@ import PixiKnobs from './PixiKnobs';
 import SketchCanvas from './SketchCanvas';
 import VirtualSpin from 'jaxcore-virtualspin';
 import EventEmitter from 'events';
-import io from 'socket.io-client';
-
-const port = 3300;
+import Jaxcore, {Spin} from 'jaxcore-client';
 
 class App extends Component {
 	constructor() {
 		super();
 
 		this.state = {
-			edgeSize: Math.round(window.innerHeight / 11),
+			edgeSize: Math.round(window.innerHeight / 15),
 			leftPosition: 0,
 			rightPosition: 0
 		};
@@ -29,101 +27,70 @@ class App extends Component {
 		this.rightSpin = null;
 
 		this.clearbutton = React.createRef();
+		this.savebutton = React.createRef();
 	}
 
 	componentWillMount() {
-		window.addEventListener('resize', () => {
-			clearTimeout(this.timer);
-			this.timer = setTimeout(() => {
-				this.resize();
-
-			}, 200);
+		
+		
+		Jaxcore.connect(() => {
+			Spin.connectAll((spin) => {
+				console.log('connected spin', spin);
+				
+				if (!this.leftSpin) this.leftSpin = spin.id;
+				else if (!this.rightSpin) this.rightSpin = spin.id;
+				spin.on('spin', (direction, position) => {
+					if (spin.id === this.leftSpin) {
+						this.setState({
+							leftPosition: position
+						});
+					}
+					else if (spin.id === this.rightSpin) {
+						this.setState({
+							rightPosition: position
+						});
+					}
+				});
+				spin.on('button', (pushed) => {
+					if (pushed) {
+						this.onClear();
+					}
+				});
+			});
 		});
 	}
 
 	resize() {
-		const edgeSize = Math.round(window.innerHeight / 11);
+		const edgeSize = Math.round(window.innerHeight / 15);
 		this.setState({
 			width: window.innerWidth,
 			height: window.innerHeight,
 			edgeSize
 		});
-		this.clearbutton.current.style.bottom = Math.round(edgeSize) + 'px';
+		this.clearbutton.current.style.bottom = Math.round(edgeSize*1.4) + 'px';
+		this.savebutton.current.style.bottom = Math.round(edgeSize/2.5) + 'px';
 	}
 
 	componentDidMount() {
-		this.connect();
+		window.addEventListener('resize', () => {
+			clearTimeout(this.timer);
+			this.timer = setTimeout(() => {
+				this.resize();
+			}, 200);
+		});
 		this.resize();
-	}
-
-	componentWillUnmount() {
-
-	}
-
-	connect() {
-		var socket = io.connect(document.location.protocol + '//' + document.location.hostname + ':' + port);
-		socket.on('connect', () => {
-			console.log('Client connected');
-			this.setState({
-				serverConnected: true
-			});
-
-
-		});
-
-		socket.on('disconnect', () => {
-			console.log('Client closed');
-			this.setState({
-				serverConnected: false
-			});
-		});
-
-		socket.on('spin-connected', (spinId) => {
-			console.log('spin-connected', spinId);
-
-			if (!this.leftSpin) this.leftSpin = spinId;
-			else if (!this.rightSpin) this.rightSpin = spinId;
-		});
-
-		socket.on('spin-disconnected', (spinId) => {
-			console.log('spin-disconnected', spinId);
-		});
-
-		socket.on('spin', (spinId, direction, position) => {
-			console.log('spin', direction);
-			if (spinId === this.leftSpin) {
-				this.setState({
-					leftPosition: position
-				});
-			}
-			else if (spinId === this.rightSpin) {
-				this.setState({
-					rightPosition: position
-				});
-			}
-			else {
-				console.log('unknown', spinId, this.leftSpin, this.rightSpin);
-				if (!this.leftSpin) this.leftSpin = spinId;
-				else if (!this.rightSpin) this.rightSpin = spinId;
-			}
-		});
-
-		socket.on('knob', (spinId, pushed) => {
-			console.log('knob', pushed);
-		});
-
-		socket.on('button', (spinId, pushed) => {
-			console.log('button', pushed);
-			this.onClear();
-		});
-
-		this.socket = socket;
+		
+		
 	}
 
 	render() {
 		return (
 			<div className="App">
-				<a id="clearbutton" href="javascript:" onClick={this.onClear} alt="Clear" ref={this.clearbutton}>Clear</a>
+				<div class="buttons">
+					<button id="clearbutton" href="/" onClick={this.onClear} alt="Clear" ref={this.clearbutton}>clear</button><br/>
+					<button id="savebutton" href="/" onClick={this.onSave} alt="Clear" ref={this.savebutton}>save</button>
+				</div>
+				
 				<SketchCanvas leftPosition={this.state.leftPosition} rightPosition={this.state.rightPosition}
 					events={this.events} ref={this.refSketch} edgeSize={this.state.edgeSize}
 					width={this.state.width}
@@ -136,8 +103,15 @@ class App extends Component {
 	}
 
 	onClear = (e) => {
+		e.preventDefault();
 		this.events.emit('clear');
-	}
+	};
+	
+	onSave = (e) => {
+		e.preventDefault();
+		let data = document.getElementById('sketchcanvas').toDataURL("image/png").replace("image/png", "image/octet-stream");
+		window.location.href = data;
+	};
 
 }
 

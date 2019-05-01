@@ -136,6 +136,8 @@ class SketchCanvas extends Component {
         this.isDrawing = false;
 
         canvas.onmousedown = (e) => {
+            if (e.button !== 0) return;
+            
             this.isDrawing = true;
             if (this.firstPoint) {
                 this.lastPoint = { x: e.layerX, y: e.layerY };
@@ -149,6 +151,7 @@ class SketchCanvas extends Component {
             }
         };
         canvas.onmouseup = (e) => {
+            if (e.button !== 0) return;
             this.isDrawing = false;
         };
 
