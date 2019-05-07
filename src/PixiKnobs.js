@@ -291,7 +291,7 @@ class PixiKnob extends Component {
     }
 
     render() {
-        return (<div>
+        return (<div title="Use keyboard arrow keys to control knobs">
             {/* <div>{this.props.leftPosition}</div>
             <div>{this.props.rightPosition}</div> */}
             <canvas ref={this.refCanvas} id="knobscanvas"></canvas>
